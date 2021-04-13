@@ -1,0 +1,8 @@
+,,,,,
+,Metric,Draft,Target,VGP,Finished
+,Contig *N*~50~,> 10 Kb,> 1 Mb,1–25 Mb,Chr
+,Scaffold *N*~50~,> 100 Kb,> 10 Mb,23–480 Mb,Chr
+,Gaps,"< 10,000",< 1000,75–1500,None
+,Completeness,> 80%,> 90%,87–98%,100%
+,Genes,> 80%,> 90%,82–98%,> 98%
+,Mappability,> 70%,> 80%,96%,98%

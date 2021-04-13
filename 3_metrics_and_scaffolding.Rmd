@@ -1,0 +1,392 @@
+```{r setup, include=FALSE, results="hide"}
+library(grid)
+library(data.table)
+library(ggplot2)
+library(scales)
+
+
+set.seed(42)
+
+# enable Lato on Ubuntu
+my_sis <- Sys.info()["sysname"]
+if (my_sis == "Linux") {
+    sysfonts::font_add(
+        "Lato",
+        regular = "/usr/share/fonts/truetype/lato/Lato-Regular.ttf",
+        bold = "/usr/share/fonts/truetype/lato/Lato-Bold.ttf",
+        italic = "/usr/share/fonts/truetype/lato/Lato-Italic.ttf",
+        bolditalic = "/usr/share/fonts/truetype/lato/Lato-BoldItalic.ttf")
+}
+if(my_sis == "Darwin") {
+    sysfonts::font_add(
+        "Lato",
+        regular = "/Users/tom/Library/Fonts/Lato-Regular.ttf",
+        bold = "/Users/tom/Library/Fonts/Lato-Bold.ttf",
+        italic = "/Users/tom/Library/Fonts/Lato-Italic.ttf",
+        bolditalic = "/Users/tom/Library/Fonts/Lato-BoldItalic.ttf")
+}
+
+# knitr options that work with fig_height: 6, fig_width: 8, and fig_crop: false
+# in beamer presentations
+fh <- grid::convertUnit(unit(227, "pt"), "in", valueOnly = TRUE)
+fw <- grid::convertUnit(unit(398, "pt"), "in", valueOnly = TRUE)
+knitr::opts_chunk$set(
+    dev.args=list(bg = "transparent",
+                  family = "Lato",
+                  pointsize = 8),
+    dev="cairo_pdf",
+    echo = FALSE,
+    message = FALSE,
+    warning = FALSE,
+    cache = TRUE,
+    fig.align = 'center',
+    # out.width = "0.8\\textwidth",
+    # out.height  ="0.8\\textheight")
+    fig.height = fh * 0.9,
+    fig.width = fw,
+    out.width = NULL,
+    out.height = NULL)
+```
+
+
+# How good is my assembly?
+
+\begincols[t]
+\begincol{0.5\textwidth}
+
+**Assembly qualities**:
+
+- draft
+- reference
+- chromosome-level
+- complete/closed, telomere to telomere (T2T)
+
+\endcol
+\begincol{0.5\textwidth}
+
+**High-quality genomes** have^1^:
+
+- contig N~50~ length ≥ 1 Mb
+- scaffold N~50~ length ≥ 10 Mb
+- ≥ 90% of sequence assigned to chromosomes
+- error rate ≤ 0.01% (1 error in 10,000 bases)
+
+\vspace{2ex}
+
+\scriptsize
+
+^1^ according to the VGP
+
+\endcol
+\endcols
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+\item this brings me to the various words that are used to describe the quality of assemblies
+\item most of these descriptions are used pretty loosely so these aren't formal definitions at all
+\item a draft genome probably means you've got a fragmented assembly in large number of contigs, and probably haven't done any scaffolding
+\item you might not expect to have a very complete sequence in that situation
+\item reference assembly  would imply that you have some larger scaffolds, probably corresponding to chromosomes, and you've got some evidence that the sequence is 90% complete or more
+\item chromosome-level means that you've scaffolded most of your contigs into chromsomes, and you have a sequence for each chromosome
+\item these assemblies almost always still have some unanchored contigs that couldn't be assigned to chromosomes
+\item and then as i just said, a telomere to telomere or complete assembly contains the whole sequence of the chromosome, with the word closed meaning that the gaps have been filled in
+\item there have been some attempts to standardise assembly quality metrics but the goalposts do shift every now and then as sequencing technology improves and gets cheaper
+\item the vertebrate genome project (VGP) is aiming to assemble 70 thousand vertebrate genomes
+\item they have set some quality targets for these assemblies
+\item they're aiming at contig N50 length at least 1 Mb and scaffold N50 length at least 10 Mb
+\item I'll explain what N50 means in a moment
+\item they want at least 90% of sequence assigned to chromosomes and less than 1 error every ten thousand bases pairs in the assembly
+\end{itemize}
+}
+:::
+
+# *N*~50~ is a contiguity statistic
+
+![](img/Figure1b.jpg)
+
+\vspace{1ex}
+
+\centering
+
+***The sequence length of the shortest contig at 50% of the total genome length***
+
+\vspace{1ex}
+
+\centering
+
+Is this *N*~50~ (*N* \rightarrow \ number)?  
+Or *L*~50~ (*L* \rightarrow \ length)?  
+***N~50~ length***?  
+\large \emojione
+
+\source{
+     \href{https://www.molecularecologist.com/2017/03/29/whats-n50/}{The Molecular Ecologist}
+}
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+\item N50 is a bit of a pain to get your head around
+\item it's just a statistic that is supposed to give you an idea of the distribution of fragment sizes in your assembly
+\item it's not that different to the median or mean length, but it just gives a bit more weight to the longer contigs
+\item the technical definition is the sequence length of the shortest contig at 50\% of the total genome length
+\item weighted median statistic such that 50\% of the entire assembly is contained in contigs or scaffolds equal to or larger than the N50 value
+\item it's pretty counter intuitive to see written like that so i'll show you an example
+\item let's imagine this is our genome assembly made up of these 7 contigs which are labelled with the length of the contigs
+\item the contigs are shown here ordered from longest to shortest
+\item if we sum the contig lengths we get 400 bases
+\item so the N50 contig is going to be the shortest contig that includes 200 b of the assembly
+\item these three contigs include 230 b, so the N50 here is the length of the shortest contig
+\item in this case that's going to be 60
+\item now as if that's not complicated enough, unfortunately there's a bit of mixed usage with N50
+\item some people would say the N50 here is actually three, because the three longest contigs make up 50% of the assembly
+\item in that case the L50 is the length of the N50 contig, so L50 would be 60
+\item i'm afraid there's no consistent usage and i've also seen these terms used the other way around with L50 referring to the number of contigs
+\item I try to use the phrase N50 length so it's obvious that I'm talking about a contig length rather than a number of contigs
+\item this might not be 100\% clear to you yet, and you have my commiseration. it's a tricky concept to grasp
+\item don't worry about it too much, you will have plenty of chances to get used to N50 statistics
+\item for now if it's not making sense, you can just remember that it's a statistic for describing the distribution of fragment sizes, just like the mean contig length is
+\item a high N50 means that your genome is assembled into large chunks, and a low N50 means the assembly is quite scaffolded
+\item it doesn't measure the underlying quality of the assembly
+\item for example if you wanted a great N50, you could just paste all the chunks together. the sequences would be wrong, but the N50 would be high
+\end{itemize}
+}
+:::
+
+# In `python3` code
+
+\footnotesize
+
+```{r engine='python', eval=TRUE, echo=TRUE}
+#!/usr/bin/env python3
+
+import numpy as np
+
+contig_lengths = [40, 100, 70, 50, 60, 50, 30]
+sorted_lengths = sorted(contig_lengths, reverse=True)
+
+genome_size = sum(sorted_lengths)
+print(genome_size)
+
+[x >= genome_size * 0.5 for x in np.cumsum(sorted_lengths)]
+
+sorted_lengths[2]
+```
+
+# How do we know if we have a good assembly?
+
+```{r metrics}
+metrics <- fread("data/metrics.csv",
+           skip = 1,
+           select = 2:6,
+           header = TRUE)
+
+pander::pander(metrics)
+```
+\vspace{1ex}
+
+\scriptsize\centering
+
+*N*~50~ describes the distribution of contig or scaffold sizes.  
+Higher *N*~50~ means the assembly is in bigger chunks.  
+
+\source{
+VPG assembly metrics, \href{https://doi.org/10.1101/2020.05.22.110833}{Rhie \emph{et al}., 2020}
+}
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+\item back to the VGP's metrics for the various levels of genome assembly
+\item apart from the N50 stats that i just told you about, they also use
+\item the number of gaps in the assembly
+\item the completeness, based on the fraction of k-mers from high quality reads that are found in the finished genome
+\item gene-based completeness, which is measured by searching for certain highly-conserved genes from related species
+\item and mappability of transcripts from related species
+\item as you'd expect in a draft assembly the n50 stats are quite low and the genome is probably only 80\% complete or so, based on these other metrics
+\item along with the target n50 stats i metioned, the VGP also aims for completeness over 90\%
+\item the third column shows the range of quality scores of actual assemblies in their database
+\item their assemblies are in a pretty good state although some of them need additional work to close gaps, which will proably also help the completeness stats
+\item and just for comparison, the last column shows that a truly complete assembly would look like
+\item although none of these exist for complex eukaryotic genomes
+\item the contigs and scaffolds would be the same, and the n50 length would just be the n50 length of the chromosomes themselves
+\item a completed assembly would not have any gaps, and all of the kmers from the high quality reads would be found in the assembly
+\item there is an upper limit on the gene completeness and transcript mappability, because of genuine differences between the organisms used for comparison
+\end{itemize}
+}
+:::
+
+# Scaffolding
+
+\begincols[c]
+\begincol{0.4\textwidth}
+
+![](img/13059_2019_1829_Fig1_HTML_crop.png){width=0.4\textwidth}
+
+\endcol
+\begincol{0.6\textwidth}
+
+- **reference genome**
+- mate pairs
+- long reads with a short-read assembly
+- proximity ligation
+- optical mapping
+
+\endcol
+\endcols
+
+\sourceleft{
+     \href{https://doi.org/10.1186/s13059-019-1829-6}{Alonge \emph{et al}., 2019}
+}
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+\item what are some methods of scaffolding these contigs?
+\item one option is to simply align your contigs to a reference genome and use that to decide the order of contigs and the size of the gaps between them
+\item this is probably the least satisfactory method because it ignores the potential for genuine differences from the references in the arrangement of the genome you are trying to assemble
+\item sometimes you don't have any other data and this is still useful to arrange your contigs in an orientation that matches the reference, even if you don't join the contigs into scaffolds
+\end{itemize}
+}
+:::
+
+# Scaffolding
+
+\begincols[c]
+\begincol{0.4\textwidth}
+
+![](img/PET_contig_scaffold.png){width=0.4\textwidth}
+
+\endcol
+\begincol{0.6\textwidth}
+
+- reference genome
+- **mate pairs**
+- **long reads with a short-read assembly**
+- proximity ligation
+- optical mapping
+- linkage mapping
+
+\endcol
+\endcols
+
+\sourceleft{
+     \href{https://commons.wikimedia.org/wiki/File:PET_contig_scaffold.png}{University of California via Wikimedia Commons}
+}
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+\item another technique is to use what are called mate pairs to try to anchor distant scaffolds
+\item in this technique you generate large fragments of DNA of a known size, and just use Illumina sequencing to sequence the ends of the fragments
+\item because you know the average fragment size, you can guess how far apart the bits you sequence were in the genome, so you can use this to link contigs over gaps that are roughly smaller than the fragment size
+\item using this method allows you to link the contigs, but it doesn't fill in the sequence of the gap, so you are still left with a string of Ns in the gap
+\item actually this method is not as popular as it was a few years ago
+\item because long read sequencing is now pretty cheap and easy to do, it's straightforward just to sequence the entire fragment, which means you can link the contigs together and fill in the gap
+\end{itemize}
+}
+:::
+
+# Scaffolding
+
+\begincols[c]
+\begincol{0.4\textwidth}
+
+![](img/hic.jpg){width=0.4\textwidth}
+
+\endcol
+\begincol{0.6\textwidth}
+
+- reference genome
+- mate pairs
+- long reads with a short-read assembly
+- **proximity ligation**
+- optical mapping
+- linkage mapping
+
+\endcol
+\endcols
+
+\sourceleft{
+     \href{https://dx.doi.org/10.1126/science.1181369}{Lieberman-Aiden \emph{et al}., 2009}
+}
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+\item another scaffolding technique is proximity ligation
+\item you sometimes hear these techniques called Hi-C or chromatin conformation capture sequencing
+\item these are available as commercial pipelines and it's proven to be a very successful scaffolding technique, so you might also hear it called Proximo sequencing or Dovetail sequencing, these are the commercial names
+\item it relies on a couple of molecular biology tricks so it's a bit counter-intuitive, 
+\item the basic principle is that the DNA is immobilised in place in the cell by something called chromatin cross-linking
+\item cross-linking joins pairs of dna molecules that are physically close together 
+\item the bits of DNA are trimmed near the cross-linking site
+\item the pairs of DNA molecules are linked together by ligation
+\item and then the junction between the two molecules is sequenced usually by illumina sequencing
+\item so when you get your sequencing read and you find a bit of the blue sequence and a bit of the red sequence, that tells you that those two sequences were physically close together
+\item so it's a way of measuring how close together two bits of DNA are in the cell
+\item on average, over a large number of cells, the fragments that are closer together in genome have a higher probability of being linked together, so this method is actually a way of measuring physical proximity of short sequence tags in the genome
+\item and so pairs of contigs that have a high number of interactions will be likely to be closer together
+\item and that allows you to do scaffolding by joining the pair of contigs that have the highest number of interactions, then the pair that has the second highest number of interactions, and so on, until you have the number of clusters of contigs that corresponds to the number of chromosomes in the genome
+\item so for example if you were scaffolding a drosophila genome like this, you'd keep joining contigs until you had 4 clusters, because that's the number of chromosomes we expect to find in the Drosophila genome
+\item this method has been really useful for scaffolding fragmented genomes
+\item because it allows you to generate chromosome-scale scaffolds
+\item however like mate-pair sequencing, it doesn't fill in any sequence in the gaps
+\end{itemize}
+}
+:::
+
+# Scaffolding
+
+\begincols[c]
+\begincol{0.4\textwidth}
+
+![](img/bionano.png){width=0.4\textwidth}
+
+\endcol
+\begincol{0.6\textwidth}
+
+- reference genome
+- mate pairs
+- long reads with a short-read assembly
+- proximity ligation
+- **optical mapping**
+- **linkage mapping**
+
+\endcol
+\endcols
+
+\sourceleft{
+     \href{https://doi.org/10.7717/peerj.10150}{Istace \emph{et al}., 2020}
+}
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+\item another scaffolding method that has been quite popular recently is optical mapping
+\item this is also avialable as a commercial pipeline, so you might hear it called bionano
+\item the way this works is that the dna molecules are tagged using sequence-specific fluorescent tags
+\item then the individual DNA molecules are imaged to create maps of the tags across the molecules
+\item so in this diagram the bars represent sites that have been tagged
+\item we can see from the order of sites matches on these three DNA molecules so they can be joined together into a single scaffold
+\item again we don't get the sequence information in the gap that's shown in red here, we only know that the two contigs should be joined together
+\item the final scaffolding method that i'll talk about is linkage mapping
+\item it's the exact same principle as optical mapping, except using genetic markers instead of sequence tags in the DNA
+\item so if you have a set of markers that have been mapped with classical genetic mapping, and you can find the sequence of the markers in your contigs, you can use the genetic information to join the contigs into scaffolds
+\item it's probably a bit unusual to have this information these days, but if you're working with e.g. an agriculturally relevent plant genome or a livestock species, it's possible that a genetic map has been constructed for it at some point, and if you have it it can be a pretty accurate scaffolding technique
+\item one thing to keep in mind is that out of all of the scaffolding techniques, long reads are the only approach that addresses the sequence of the gaps
+\item so for a truly complete sequence of any genome that has regions that can't be assembled using illumina sequencing, at some point you are going to need to use long reads
+\item and this approach is being used now to try to get a fully closed sequence of the human genome
+\item this approach where even the repetitive elements of the genome are fully sequenced is being called telomere-to-telomere assmebly
+\end{itemize}
+}
+:::

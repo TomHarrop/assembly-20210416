@@ -1,0 +1,488 @@
+
+```{r setup, include=FALSE, results="hide"}
+library(grid)
+library(data.table)
+library(ggplot2)
+library(scales)
+
+
+set.seed(42)
+
+# enable Lato on Ubuntu
+my_sis <- Sys.info()["sysname"]
+if (my_sis == "Linux") {
+    sysfonts::font_add(
+        "Lato",
+        regular = "/usr/share/fonts/truetype/lato/Lato-Regular.ttf",
+        bold = "/usr/share/fonts/truetype/lato/Lato-Bold.ttf",
+        italic = "/usr/share/fonts/truetype/lato/Lato-Italic.ttf",
+        bolditalic = "/usr/share/fonts/truetype/lato/Lato-BoldItalic.ttf")
+}
+if(my_sis == "Darwin") {
+    sysfonts::font_add(
+        "Lato",
+        regular = "/Users/tom/Library/Fonts/Lato-Regular.ttf",
+        bold = "/Users/tom/Library/Fonts/Lato-Bold.ttf",
+        italic = "/Users/tom/Library/Fonts/Lato-Italic.ttf",
+        bolditalic = "/Users/tom/Library/Fonts/Lato-BoldItalic.ttf")
+}
+
+# knitr options that work with fig_height: 6, fig_width: 8, and fig_crop: false
+# in beamer presentations
+fh <- grid::convertUnit(unit(227, "pt"), "in", valueOnly = TRUE)
+fw <- grid::convertUnit(unit(398, "pt"), "in", valueOnly = TRUE)
+knitr::opts_chunk$set(
+    dev.args=list(bg = "transparent",
+                  family = "Lato",
+                  pointsize = 8),
+    dev="cairo_pdf",
+    echo = FALSE,
+    message = FALSE,
+    warning = FALSE,
+    cache = TRUE,
+    fig.align = 'center',
+    # out.width = "0.8\\textwidth",
+    # out.height  ="0.8\\textheight")
+    fig.height = fh * 0.9,
+    fig.width = fw,
+    out.width = NULL,
+    out.height = NULL)
+```
+
+
+# Why sequence genomes?
+
+\begincols[c]
+\begincol{0.6\textwidth}
+
+![](img/screenshot-nextstrain.org-2021.03.10-16_57_41.png){width=0.55\textwidth}
+
+\endcol
+\begincol{0.4\textwidth}
+
+- compare differences between species
+- compare variants of a species or population
+- research diseases
+- provide a reference for gene expression analysis
+
+\endcol
+\endcols
+
+\sourceleft{
+     \href{https://nextstrain.org/ncov}{Nextstrain \& GISAID}
+}
+
+::: {.not-in-format .markdown}
+
+\note{\tiny\begin{itemize}
+\item what does the sequence of an organism's genome tell us?
+\item prokaryotes and eukaryotes have DNA genomes, made up of strings of bases represented by the letters A, T, G and C
+\item the order of these bases is functional, in that it encodes information, such as the instructions to make proteins
+\item in this examples I'm showing you a short coding sequence, which is part of gene that is read by cellular machinery to produce proteins
+\item at this particular site, the sequence of bases is ATG, which instructs the cell to incorporate a tyrosine residue in the protein
+\item the next site is CTT, which instructs it to incorporate a glutamate residue
+\item so knowing this sequence of DNA bases allows us to look at the cell's set of instructions for producing proteins
+\item the genome sequence is a bit like an architect's plan for building a house, if that analogy helps
+\end{itemize}
+}
+
+\note{\tiny\begin{itemize}
+\item sequencing an organism's genome allows us to look at the instructions for an organism, but as researchers, what do we do with that information?
+\item actually we use genomes for lots of different types of research, and these are just a few examples
+\item this is an alignment between the nuclear genomes of homo sapiens and pan troglodytes, the chimpanzee
+\item comparing these two genomes might help us work out what causes the differences between the organisms
+\item it might also tell us something about the genomic changes that occurred as the two genomes evolved separately after they split from their last common ancestor
+\end{itemize}
+}
+
+
+\note{\tiny\begin{itemize}
+\item on a finer scale, we might want to look at genomic variants within species or populations, to compare individuals of that species
+\item this is an example you might have seen before
+\item it's the global SARS-Cov2 phylogeny deposited on nextstrain
+\item this is based on sequencing the genomes of individual SARS-Cov2 isolates and comparing them to each other
+\item and this sort of information allows us to track the origin of different variants, and monitor their spread
+\item looking at the variation between the sequences of isolates also allows us to make predictions about the function of the different isolates
+\item and we can also track the evolution of isolates and work out evolutionary relationships between isolates
+\end{itemize}
+}
+
+\note{\tiny\begin{itemize}
+\item on an even finer scale we also use genome sequencing for clinical genetics
+\item as i said earlier we can look at the instructions for producing proteins by looking at the sequence of genes in the nuclear genome
+\item if we have an individual with a disease and see that they have a mutation in the coding sequence for a gene associated with that disease, and that mutation changes the protein sequence encoded by the gene, then we can determine what the underlying cause of the disease is in that individual
+\item you've probably heard the term precision medicine, and sequencing genomes of individual patients is obviously part of that
+\item this is something that is becoming prominent in healthcare and we expect the amount of sequencing of individual patients' genomes in clinical settings to keep increasing
+\end{itemize}
+}
+
+\note{\tiny\begin{itemize}
+\item we also sequence genomes in research settings as a reference for other types of analysis
+\item the example I'm showing here is for analysis of gene expression
+\item in these experiments we sequence mRNA molecules to compare the strength of expression of genes in different conditions
+\item to do this, we need a reference genome so we can work out which gene each read came from
+\item you'll be hearing more about that in elements of bioinformatics in the coming weeks
+\end{itemize}
+}
+
+:::
+
+
+# Difference between assembly and alignment
+
+- don't have ref
+
+
+
+# Prokaryotic and eukaryotic genomes
+
+\begincols[c]
+\begincol{0.5\textwidth}
+
+![](img/Figure_14_02_06_new.jpg){width=0.5/textwidth}
+
+\endcol
+\begincol{0.5\textwidth}
+
+\small
+
+**In prokaryotes**:
+
+- chromosomes (usually one)
+    - genes rarely have introns
+    - *coding dense*
+- plasmids
+- bacteriophage
+
+\vspace{1ex}
+
+**In eukaryotes**:
+
+- nuclear genome (chromosomes)
+    - genes ± introns
+    - non-coding elements
+    - mobile elements
+    - centromeres
+    - telomeres
+- mitochondria
+- chloroplasts
+
+\endcol
+\endcols
+
+\sourceleft{
+\href{https://commons.wikimedia.org/wiki/File:Figure_14_02_06_new.jpg}{CNX OpenStax} via Wikimedia Commons 
+}
+
+
+::: {.not-in-format .markdown}
+
+\note{\tiny\begin{itemize}
+
+\item in this diagram the cell on the right represents a prokaryotic bacterial cell
+\item the dna is contained in the single, cicular, chromosome, which is folded in the centre of the cell
+\item there is also dna in the smaller, independently-replicating plasmids shown as dots
+\item the left hand cell is a eukaryotic cell such as an animal or plant cell
+\item its genetic material is organised into chromatin, which forms compact chromosomes inside the nucleus
+\item eukaryotic cells also have mitochondria (kidney beans), which contain their own genetic material 
+\item this is called the mitochondrial genome
+\item in eukaryotes the mitochondrial genome is usually inherited maternally, because the mitochondria are in the cytoplasm of the egg when it is fertilised by the sperm, and the sperm cell's mitochondria don't replicate after fertilisation
+\item plant cells also have chloroplasts for photosynthesis, and chloroplasts have their own genetic material
+\item like the plasmids in bacterial cells, both mitochondria and chloroplasts replicate independently of the chromosomes in the nucleus, but they are still considered part of the cell's genome
+
+\item this is a summary of the differences between prokaryotic and eukaryotic genomes
+\item prokaryotes usually have smaller genomes, with one chromosome that is quite compact
+\item they have some extrachromosomal genetic material in plasmids
+\item prokaryotic cells also often contain virus-like particles called bacteriophage, that also contain a small amount of genetic material
+\item in comparison eukaryotic genomes can be quite large
+\item genes are often broken up by introns
+\item and the intergenic sequence between genes can contain large non-coding elements as well as mobile genetic elements, which are stretches of DNA that can move around the genome from generation to generation
+\item the nuclear genome also contains large repetitive sequences like centromeres and telomores
+\item eukaryotes also have extrachromosomal material like the mitochondrial genome
+\item and plant cells additionally have genetic material in their chloroplasts
+\item but for both types of organism, it's the sum of cellular genetic material that makes up the cell's genome, even though the word "genome" is often used to refer to the nuclear genome of eukaryotes or the chromosomal genome of prokaryotes
+\item 
+\end{itemize}
+}
+:::
+
+# Bacterial genomes can be dense
+
+![](img/13099_2014_Article_154_Fig3_HTML.jpg){height=70mm}
+
+\source{
+     \href{https://doi.org/10.1186/1757-4749-6-32}{Darling \emph{et al}., 2014}
+}
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+\item this diagram represents the genome of a strain of the bacterium *E. coli*
+\item it's shown as a circle, because like in most prokaryotes, the main *E. coli* genome is a single circular chromosome
+\item this diagram doesn't include any of the extracellular material I mentioned on the previous slide
+\item the scale bar here is showing you the size of the genome
+\item this genome assembly is about 160 kb (160 thousand bases) long
+\item if you look at the outer ring in this diagram, each of the little red arrows represents a predicted coding sequence, or a gene
+\item you can't see them all on this diagram, but this genome has over 5 thousand genes in about 160 kb
+\item most prokaryotic genes don't have introns (which are non-coding regions of DNA that are removed during mRNA processing)
+\item so bacterial genomes in general are quite coding dense, meaning that there are lots of genes packed close together with little intergenic sequence
+\end{itemize}
+}
+:::
+
+# The nuclear genome of eukaryotes
+
+![](fig/Chromosome_en.eps){height=70mm}
+
+\source{
+     \href{https://upload.wikimedia.org/wikipedia/commons/f/fd/Chromosome_en.svg}{KES47} via Wikimedia Commons
+}
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+\item in contrast, the nuclear genome of eukaryotes is generally larger, ranging from about 2 million bases to several hundred billion bases
+\item again, when i say nuclear genome, i'm referring to the chromosomes inside the nucleus, which is where most of the genetic material is stored by eukaryotes
+\item unlike prokaryote genomes, the nuclear genomes of eukaryotes can be quite sparse, with coding sequences or genes separated by large stretches of non-coding sequence
+\item for examples, eukaryotic chromosomes have highly repetetive sequences at the end of their chromosomes called telomeres, which don't have open reading frames or regions that encode genes
+\item another example is the centromere region where the two chromatids that make up the chromosome are joined, which is also highly repetitive and doesn't encode genes
+\end{itemize}
+}
+:::
+
+# The nuclear genome of eukaryotes
+
+\begincols[c]
+\begincol{0.4\textwidth}
+
+![](img/Pre-mRNA.eps){width=0.4\textwidth}
+
+\endcol
+\begincol{0.6\textwidth}
+
+**Non-coding sequences**
+
+- Telomeres, centromeres
+- Introns and untranslated regions
+- Regulatory elements
+- Pseudogenes
+- Repetitive sequences *e.g.* mobile elements
+
+\endcol
+\endcols
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+\item what are the other non-coding sequences in the nuclear genomes of eukaryotes?
+\item eukaryotic genes often contain additional sequence apart from the regions that encode proteins
+\item the protein coding-regions, or coding sequence, of this gene is shown in red
+\item there are also parts of the gene between the exons, that are called introns, that are removed when the mRNA is processed
+\item there are other parts of the mature RNA that are not translated into proteins
+\item there are also regulatory sequences in the DNA surrounding the genes (not shown in this diagram), which control when and where the gene is transcribed into messenger RNA
+\item pseudogenes are dna sequences that are related to sequences of known genes, but are not functional
+\item so this might occur when a change in selective pressure means that a gene is no longer required, so it is free to accumulate mutations like stop codons, which mean that it can't produce protein any more
+\item aside from genes, huge portions of eukaryotic genomes can be made up of repetitive sequences, including transposons and retrotransposons, which are mobile genetic elements
+\item these elements move around the genome can carry functional sequences with them, which can cause mutations in genes or lead to changes in gene expression
+\end{itemize}
+}
+:::
+
+\sourceleft{
+     \href{https://commons.wikimedia.org/wiki/File:Pre-mRNA.svg}{Nastypatty via Wikimedia Commons}
+}
+
+# Genome assembly concepts
+
+\begincols[c]
+\begincol{0.4\textwidth}
+
+![](fig/assembly.eps){height=50mm}
+
+\endcol
+\begincol{0.6\textwidth}
+
+- The genome is fragmented for sequencing
+- The sequencing ***reads*** might be
+    - 100-350 b long (Illumina)
+    - ~20 kb long (PacBio HiFi)
+    - up to a few hundred thousand bases long (Nanopore)
+- ***Assembly*** is the process of reconstructing the genome from the sequenced reads
+- It's not always possible to assemble the complete sequence
+
+\endcol
+\endcols
+
+\sourceleft{
+\href{https://dx.doi.org/10.1007/s12575-009-9004-1}{Commins \emph{et al}., 2009}
+}
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+\item we know what a genome is and why we might want to sequence it
+\item how do we go about producing a genome sequence?
+\item in this diagram the coloured bar represents a genomic sequence
+\item so you can think of the bar as one chromosome from the nuclear genome of a eukaryote, or a single bacterial chromosome
+\item this single sequence might be thousands or millions of bases long, and we can't sequence the whole thing in one go
+\item this is because of the limitations in sequencing technology
+\item if we're using illumina sequencing, we can only generate reads of up to 350 b, but usually 100 or 150 b
+\item long-read technology such as PacBio HiFi reads are about 20 kb l;ong
+\item and oxford nanopore reads can be up to a few hundred thousand bases long
+\item because we have to sequence small chunks of the genome at a time, we need many copies of the starting material as input for sequencing
+\item this might come from many cells from the same organism or tissue, or a culture of identical bacterial cells
+\item for genome assembly, the sequencing process goes like this:
+\item we take our sample, and use some molecular biology skills to extract purified dna from it
+\item we break up the extracted DNA into chunks that can be sequenced by whatever technology we're using
+\item and then we use some algorithm to try to reconstruct the original genome sequence from the reads we have
+\item now, in this diagram we don't actually need a very complicated algorithm, because the reads are colour-coded as to what part of the genome they came from
+\item so we can just arrange them by colour and then look at the sequence of the reads
+\item in a real sequencing project we have no idea which part of the the genome the reads came from, all we have is the sequence itself
+\item so we need an algorithm that can use the sequence to try to join the reads together and reconstruct the original sequence, which turns out to be quite complicated for anything other than the simplest starting material
+\item i'm going to introduce some of the algorithms in the next video
+\item because we had to fragment the genome to sequence it, we often aren't able to completely reassemble it into one single piece
+\item this problem is compounded for genomes that have more than one chromosome
+\item and i'll talk about some of the other challenges in this process a bit later on
+\end{itemize}
+}
+:::
+
+# Sequencing strategies for genome assembly
+
+\begincols[c]
+\begincol{0.4\textwidth}
+
+![](fig/assembly.eps){height=50mm}
+
+\endcol
+\footnotesize\begincol{0.6\textwidth}
+
+- ***Hierarchical shotgun*** Sanger sequencing
+- Short read, Illumina sequencing
+    - 100--350 b
+    - sometimes called ***high-throughput***, ***next-generation*** (!) or ***2^nd^-generation sequencing***
+    - good for draft assemblies of eukaryote genomes
+- Long read (***third-generation***) sequencing
+    - PacBio: ~ 20 kb reads
+    - Nanpore: up to 100s of kb, read *N*~50~ usually > 20 kb
+    - expect much better contiguity, but can have accuracy issues
+- Scaffolding approaches work with any underlying assembly
+
+\endcol
+\endcols
+
+\sourceleft{
+\href{https://dx.doi.org/10.1007/s12575-009-9004-1}{Commins \emph{et al}., 2009}
+}
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+\item this is a summary of the different sequencing approaches used to generate the data for genome assembly
+\item i've included sanger sequencing here, which is the first-generation sequencing technology
+\item this approach used on the human genome project which was completed in 2001
+\item in this process the starting material was into structures called bacterial artificial chromosomes
+\item the clones were sequenced in small pieces using the sanger sequencing technique
+\item this actually yielded a pretty good first draft of the human genome
+\item however it's far too labour intensive to be used for any sequencing projects today
+\item typically what would be used today is short-read sequencing
+\item this yields reads from 100 to 350 bases long
+\item you sometimes hear it called high throughput sequencing HTS
+\item or next-generation sequencing (NGS)
+\item it may have been next-generation in the early 2000s but it probably doesn't make sense to call it that any more
+\item you can also call it second generation sequencing, but it's often just called illumina sequencing because that's the dominant platform
+\item its main benefits are that it's cheap to produce lots and lots of data, and the read accuracy is generally very high
+\item illumina sequencing alone might be good enough to generate a quality assembly for a compact bacterial genome without much repeat sequence
+\item however for more complex eukaryote genomes i would expect an assembly based on illumina sequencing alone to generate something more in the range of a draft genome sequence in terms of contiguity, although the sequences that were assembled would be high-accuracy
+\item long read sequencing obviously generates longer reads, around 20 kb for PacBio or possibly longer for oxford nanopore
+\item the main drawback for these approaches is that the accuracy is lower, particularly for oxford nanopore sequencing. it is getting better all the time, but it's still quite a way behind the accuracy of illumina sequencing.
+\item however if you are assembling a genome with long reads, you can expect much higher contiguity than a short-read only genome
+\item and if you have gaps in your short-read assembly, long reads that span those gaps are the only way to fill in the missing sequence
+\item any of the scaffolding approaches i described can be used with assemblies produced using any of these sequencing strategies, although more contiguous assemblies will be easier to assemble because they are in fewer fragments
+\end{itemize}
+}
+:::
+
+# Sequencing coverage
+
+- insert other figure here
+
+# Sequencing coverage
+
+\begincols[c]
+\begincol{0.4\textwidth}
+
+![](fig/coverage.eps){width=0.4\textwidth}
+
+\endcol
+\begincol{0.6\textwidth}
+
+- aim to cover each base > 30 times
+- final sequence is the ***consensus*** of all the reads covering that base
+- $\text{1 Gb} \times \text{30× coverage} = \text{30 Gb}$
+- $\frac{\text{30 Gb}}{\text{150 b}} = \text{200 million reads}$
+- using PacBio reads, with an average length of 20 kb?
+
+\endcol
+\endcols
+
+\sourceleft{
+\href{https://dx.doi.org/10.1007/s12575-009-9004-1}{Commins \emph{et al}., 2009}
+}
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+\item during the sequencing process we've broken the starting material up into smaller fragments, and we need to make sure we sequence enough fragments to cover each base in the genome multiple times
+\item there two main reasons for this
+\item the first is to make sure we have enough data to join different sequences together
+\item in this location we have a base that is only covered by one read, and one read would not be considered enough evidence that the sequence on the right is joined to the sequence on the left
+\item the second is to help deal with sequencing errors
+\item all sequencing technologies can produce errors, where a read has an incorrect base in it
+\item if we have multiple reads covering a single genomic location, the reads can effectively "vote" for what the correct sequence should be
+\item that's called the consensus sequence
+\item as it happens most algorithms are happy enough with sequencing coverage around 30x\
+\item so if our example genome here is 1 gigabase, or one billion bases long
+\item and we want to sequence it to thirty fold coverage
+\item we need to produce 30 gigabases of sequence data
+\item if our read length is 150 b, like in illumina sequencing, that means we would want 200 million reads to get that level of coverage
+\item and i'll leave it for you to calculate how much PacBio data we'd need at an average read length of 20 thousand bases to get the same coverage
+\end{itemize}
+}
+:::
+
+# Hybrid genome assembly
+
+\begincols[c]
+\begincol{0.5\textwidth}
+
+![](img/men13312-fig-0001-l.jpg){height=70mm}
+
+\endcol
+\begincol{0.5\textwidth}
+
+- ***hybrid assemblies*** combine long and short reads
+- scaffolding the hybrid assembly can generate chromosome-level assemblies
+
+\endcol
+\endcols
+
+\sourceleft{
+\href{https://doi.org/10.1111/1755-0998.13312}{Whibley \emph{et al}., 2020}
+}
+
+::: {.not-in-format .markdown}
+\note{\tiny\begin{itemize}
+\item of course a really powerful strategy is to combine long and short reads
+\item this is called hybrid assembly
+\item you'll be learning more about this in the workshop on friday
+\item in this approach you get a short read dataset and a long read dataset, and you combine them to produce a highly contiguous assembly with high accuracy
+\item it's essentially the best of both worlds
+\item and then if you add a scaffolding dataset you can generate a high quality chromosome-level assembly
+\item one thing i didn't mention that is really important is that the input DNA used for sequencing really needs to be of the highest possible quality
+\item it's particularly important for long-read sequencing, because DNA that's in poor condition is likely to generate shorter sequencing reads
+\item as bioinformaticians there's not much we can do retrospectively if sequencing has been done on a less-than-ideal sample, but it's important to keep dna quality in mind in the planning stages of a genome assembly project
+\item from a review called "Guidance on achieving high‐quality reference genomes"
+\end{itemize}
+}
+:::
