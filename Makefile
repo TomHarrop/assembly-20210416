@@ -76,8 +76,8 @@ $(TEXTMP) : tmpdir/%.tex : tmpdir/%.utf8.md | style/header.tex style/body.tex tm
 $(MD) : tmpdir/%.utf8.md : tmpdir/%.Rmd | tmpdir
 	R -e "rmarkdown::render('$^',clean=FALSE,run_pandoc=FALSE, knit_root_dir='..')"
 
-$(TMP) : tmpdir/%.Rmd : %.Rmd | style/beamer.yaml style/header.tex tmpdir
-	cat style/beamer.yaml $^ > $@
+$(TMP) : tmpdir/%.Rmd : %.Rmd | style/beamer.yaml style/header.tex style/r_setup.Rmd tmpdir
+	cat style/beamer.yaml style/r_setup.Rmd $^ > $@
 
 
 $(SOURCE) : sourcedir/%.md : tmpdir/%.utf8.md | sourcedir
