@@ -9,7 +9,7 @@ PDF := $(RMD:%.Rmd=pdf/%.pdf)
 TEX := $(RMD:%.Rmd=tex/%.tex)
 NOTES := $(RMD:%.Rmd=pdfnotes/%.pdf)
 SOURCE := $(RMD:%.Rmd=sourcedir/%.md)
-
+PPTX := $(RMD:%.Rmd=sourcedir/%.pptx)
 
 .PHONY: all
 all: $(PDF) $(TEX)
@@ -18,7 +18,7 @@ all: $(PDF) $(TEX)
 notes: $(NOTES)
 
 .PHONY: source
-source: $(SOURCE)
+source: $(SOURCE) $(PPTX)
 
 cruft = tmpdir notetmp sourcedir
 
@@ -85,6 +85,18 @@ $(SOURCE) : sourcedir/%.md : tmpdir/%.utf8.md | sourcedir
 		+RTS -K512m \
 		-RTS $^ \
 		--to markdown \
+		--from markdown+autolink_bare_uris+ascii_identifiers+tex_math_single_backslash-implicit_figures \
+		--output $@ \
+		--highlight-style tango \
+		--self-contained \
+		--lua-filter=style/notefilter.lua
+
+
+$(PPTX) : sourcedir/%.pptx : tmpdir/%.utf8.md | sourcedir
+		/usr/bin/env pandoc \
+		+RTS -K512m \
+		-RTS $^ \
+		--to pptx \
 		--from markdown+autolink_bare_uris+ascii_identifiers+tex_math_single_backslash-implicit_figures \
 		--output $@ \
 		--highlight-style tango \

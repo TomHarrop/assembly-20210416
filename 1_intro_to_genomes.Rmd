@@ -1,26 +1,20 @@
-
-
 # Why sequence genomes?
 
-\begincols[c]
-\begincol{0.6\textwidth}
+:::::::::::::: {.columns align="center"}
+::: {.column width="0.6"}
 
 ![](img/screenshot-nextstrain.org-2021.03.10-16_57_41.png){width=0.55\textwidth}
 
-\endcol
-\begincol{0.4\textwidth}
+:::
+::: {.column width="0.4"}
 
 - compare differences between species
 - compare variants of a species or population
 - research diseases
 - provide a reference for gene expression analysis
 
-\endcol
-\endcols
-
-\sourceleft{
-     \href{https://nextstrain.org/ncov}{Nextstrain \& GISAID}
-}
+:::
+::::::::::::::
 
 ::: notes
 \tiny
@@ -64,16 +58,18 @@
 - don't have ref
 
 
-
 # Prokaryotic and eukaryotic genomes
 
-\begincols[c]
-\begincol{0.5\textwidth}
+:::::::::::::: {.columns align="center"}
+::: {.column width="0.5"}
 
 ![](img/Figure_14_02_06_new.jpg){width=0.5/textwidth}
 
-\endcol
-\begincol{0.5\textwidth}
+:::
+::: {.column width="0.5"}
+
+
+
 
 \small
 
@@ -98,8 +94,8 @@
 - mitochondria
 - chloroplasts
 
-\endcol
-\endcols
+:::
+::::::::::::::
 
 \sourceleft{
 \href{https://commons.wikimedia.org/wiki/File:Figure_14_02_06_new.jpg}{CNX OpenStax} via Wikimedia Commons 
@@ -172,13 +168,13 @@
 
 # The nuclear genome of eukaryotes
 
-\begincols[c]
-\begincol{0.4\textwidth}
+:::::::::::::: {.columns align="center"}
+::: {.column width="0.4"}
 
 ![](img/Pre-mRNA.eps){width=0.4\textwidth}
 
-\endcol
-\begincol{0.6\textwidth}
+:::
+::: {.column width="0.6"}
 
 **Non-coding sequences**
 
@@ -188,8 +184,8 @@
 - Pseudogenes
 - Repetitive sequences *e.g.* mobile elements
 
-\endcol
-\endcols
+:::
+::::::::::::::
 
 ::: notes
 \tiny
@@ -212,13 +208,14 @@
 
 # Genome assembly concepts
 
-\begincols[c]
-\begincol{0.4\textwidth}
+:::::::::::::: {.columns align="center"}
+::: {.column width="0.4"}
 
 ![](fig/assembly.eps){height=50mm}
 
-\endcol
-\begincol{0.6\textwidth}
+
+:::
+::: {.column width="0.6"}
 
 - The genome is fragmented for sequencing
 - The sequencing ***reads*** might be
@@ -228,8 +225,8 @@
 - ***Assembly*** is the process of reconstructing the genome from the sequenced reads
 - It's not always possible to assemble the complete sequence
 
-\endcol
-\endcols
+:::
+::::::::::::::
 
 \sourceleft{
 \href{https://dx.doi.org/10.1007/s12575-009-9004-1}{Commins \emph{et al}., 2009}
@@ -265,13 +262,16 @@
 
 # Sequencing strategies for genome assembly
 
-\begincols[c]
-\begincol{0.4\textwidth}
+:::::::::::::: {.columns align="center"}
+::: {.column width="0.4"}
 
 ![](fig/assembly.eps){height=50mm}
 
-\endcol
-\footnotesize\begincol{0.6\textwidth}
+
+:::
+::: {.column width="0.6"}
+
+\footnotesize
 
 - ***Hierarchical shotgun*** Sanger sequencing
 - Short read, Illumina sequencing
@@ -284,8 +284,8 @@
     - expect much better contiguity, but can have accuracy issues
 - Scaffolding approaches work with any underlying assembly
 
-\endcol
-\endcols
+:::
+::::::::::::::
 
 \sourceleft{
 \href{https://dx.doi.org/10.1007/s12575-009-9004-1}{Commins \emph{et al}., 2009}
@@ -322,13 +322,14 @@
 
 # Sequencing coverage
 
-\begincols[c]
-\begincol{0.4\textwidth}
+:::::::::::::: {.columns align="center"}
+::: {.column width="0.4"}
 
 ![](fig/coverage.eps){width=0.4\textwidth}
 
-\endcol
-\begincol{0.6\textwidth}
+
+:::
+::: {.column width="0.6"}
 
 - aim to cover each base > 30 times
 - final sequence is the ***consensus*** of all the reads covering that base
@@ -336,8 +337,8 @@
 - $\frac{\text{30 Gb}}{\text{150 b}} = \text{200 million reads}$
 - using PacBio reads, with an average length of 20 kb?
 
-\endcol
-\endcols
+:::
+::::::::::::::
 
 \sourceleft{
 \href{https://dx.doi.org/10.1007/s12575-009-9004-1}{Commins \emph{et al}., 2009}
@@ -363,19 +364,19 @@
 
 # Hybrid genome assembly
 
-\begincols[c]
-\begincol{0.5\textwidth}
+:::::::::::::: {.columns align="center"}
+::: {.column width="0.5"}
 
 ![](img/men13312-fig-0001-l.jpg){height=70mm}
 
-\endcol
-\begincol{0.5\textwidth}
+:::
+::: {.column width="0.5"}
 
 - ***hybrid assemblies*** combine long and short reads
 - scaffolding the hybrid assembly can generate chromosome-level assemblies
 
-\endcol
-\endcols
+:::
+::::::::::::::
 
 \sourceleft{
 \href{https://doi.org/10.1111/1755-0998.13312}{Whibley \emph{et al}., 2020}

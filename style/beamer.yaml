@@ -2,7 +2,7 @@
 # delete the title to customise the title page in body.tex
 author: "Tom Harrop"
 title: "*De novo* genome assembly"
-date: "Computational Genomics | Week 7"
+date: "Computational Genomics | Lecture 14"
 output:
   beamer_presentation:
     fig_caption: false
