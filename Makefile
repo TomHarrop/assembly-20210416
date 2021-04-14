@@ -89,7 +89,7 @@ $(SOURCE) : sourcedir/%.md : tmpdir/%.utf8.md | sourcedir
 		--output $@ \
 		--highlight-style tango \
 		--self-contained \
-		--lua-filter=style/not-in-format.lua
+		--lua-filter=style/notefilter.lua
 
 
 sourcedir:

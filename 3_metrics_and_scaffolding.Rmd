@@ -3,7 +3,7 @@ library(grid)
 library(data.table)
 library(ggplot2)
 library(scales)
-
+library(reticulate)
 
 set.seed(42)
 
@@ -126,57 +126,83 @@ Or *L*~50~ (*L* \rightarrow \ length)?
      \href{https://www.molecularecologist.com/2017/03/29/whats-n50/}{The Molecular Ecologist}
 }
 
-::: {.not-in-format .markdown}
-\note{\tiny\begin{itemize}
-  \setlength{\itemsep}{1pt}
-  \setlength{\parskip}{0pt}
-  \setlength{\parsep}{0pt}
-\item N50 is a bit of a pain to get your head around
-\item it's just a statistic that is supposed to give you an idea of the distribution of fragment sizes in your assembly
-\item it's not that different to the median or mean length, but it just gives a bit more weight to the longer contigs
-\item the technical definition is the sequence length of the shortest contig at 50\% of the total genome length
-\item weighted median statistic such that 50\% of the entire assembly is contained in contigs or scaffolds equal to or larger than the N50 value
-\item it's pretty counter intuitive to see written like that so i'll show you an example
-\item let's imagine this is our genome assembly made up of these 7 contigs which are labelled with the length of the contigs
-\item the contigs are shown here ordered from longest to shortest
-\item if we sum the contig lengths we get 400 bases
-\item so the N50 contig is going to be the shortest contig that includes 200 b of the assembly
-\item these three contigs include 230 b, so the N50 here is the length of the shortest contig
-\item in this case that's going to be 60
-\item now as if that's not complicated enough, unfortunately there's a bit of mixed usage with N50
-\item some people would say the N50 here is actually three, because the three longest contigs make up 50% of the assembly
-\item in that case the L50 is the length of the N50 contig, so L50 would be 60
-\item i'm afraid there's no consistent usage and i've also seen these terms used the other way around with L50 referring to the number of contigs
-\item I try to use the phrase N50 length so it's obvious that I'm talking about a contig length rather than a number of contigs
-\item this might not be 100\% clear to you yet, and you have my commiseration. it's a tricky concept to grasp
-\item don't worry about it too much, you will have plenty of chances to get used to N50 statistics
-\item for now if it's not making sense, you can just remember that it's a statistic for describing the distribution of fragment sizes, just like the mean contig length is
-\item a high N50 means that your genome is assembled into large chunks, and a low N50 means the assembly is quite scaffolded
-\item it doesn't measure the underlying quality of the assembly
-\item for example if you wanted a great N50, you could just paste all the chunks together. the sequences would be wrong, but the N50 would be high
-\end{itemize}
-}
+::: notes
+\tiny
+
+- N50 is a bit of a pain to get your head around
+- it's just a statistic that is supposed to give you an idea of the distribution of fragment sizes in your assembly
+- it's not that different to the median or mean length, but it just gives a bit more weight to the longer contigs
+- the technical definition is the sequence length of the shortest contig at 50\% of the total genome length
+- weighted median statistic such that 50\% of the entire assembly is contained in contigs or scaffolds equal to or larger than the N50 value
+- it's pretty counter intuitive to see written like that so i'll show you an example
+- let's imagine this is our genome assembly made up of these 7 contigs which are labelled with the length of the contigs
+- the contigs are shown here ordered from longest to shortest
+- if we sum the contig lengths we get 400 bases
+- so the N50 contig is going to be the shortest contig that includes 200 b of the assembly
+- these three contigs include 230 b, so the N50 here is the length of the shortest contig
+- in this case that's going to be 60
+- now as if that's not complicated enough, unfortunately there's a bit of mixed usage with N50
+- some people would say the N50 here is actually three, because the three longest contigs make up 50% of the assembly
+- in that case the L50 is the length of the N50 contig, so L50 would be 60
+- i'm afraid there's no consistent usage and i've also seen these terms used the other way around with L50 referring to the number of contigs
+- I try to use the phrase N50 length so it's obvious that I'm talking about a contig length rather than a number of contigs
+- this might not be 100\% clear to you yet, and you have my commiseration. it's a tricky concept to grasp
+- don't worry about it too much, you will have plenty of chances to get used to N50 statistics
+- for now if it's not making sense, you can just remember that it's a statistic for describing the distribution of fragment sizes, just like the mean contig length is
+- a high N50 means that your genome is assembled into large chunks, and a low N50 means the assembly is quite scaffolded
+- it doesn't measure the underlying quality of the assembly
+- for example if you wanted a great N50, you could just paste all the chunks together. the sequences would be wrong, but the N50 would be high
 :::
 
 # In `python3` code
 
 \footnotesize
 
-```{r engine='python', eval=TRUE, echo=TRUE}
+:::::::::::::: {.columns .onlytextwidth }
+::: {.column width="48%"}
+
+
+```{python part1, eval=TRUE, echo=TRUE, prompt = TRUE, comment = "", collapse = FALSE, autodep=TRUE, cache=FALSE}
 #!/usr/bin/env python3
 
 import numpy as np
 
-contig_lengths = [40, 100, 70, 50, 60, 50, 30]
-sorted_lengths = sorted(contig_lengths, reverse=True)
+contig_lengths = [
+  40, 100, 70, 50, 60, 50, 30]
+sorted_lengths = sorted(
+  contig_lengths, reverse=True)
 
 genome_size = sum(sorted_lengths)
 print(genome_size)
-
-[x >= genome_size * 0.5 for x in np.cumsum(sorted_lengths)]
-
-sorted_lengths[2]
 ```
+
+:::
+::: {.column width="48%"}
+
+```{python part2, eval=TRUE, echo=TRUE, prompt = TRUE, comment = "", collapse = FALSE, dependson='part1', autodep=TRUE, cache=FALSE}
+i = [
+  x >= genome_size * 0.5
+  for x in np.cumsum(sorted_lengths)
+  ].index(True)
+
+print(i)
+sorted_lengths[i]
+```
+
+:::
+::::::::::::::
+
+::: notes
+
+\tiny
+
+Sine bvlah
+
+- note
+- more note
+
+:::
+
 
 # How do we know if we have a good assembly?
 
