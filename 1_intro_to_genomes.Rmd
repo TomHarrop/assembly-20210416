@@ -279,6 +279,56 @@
 - and i'll talk about some of the other challenges in this process a bit later on
 :::
 
+
+# Sequencing coverage
+
+- insert other figure here
+- or not? i don't really agree with it
+
+# Sequencing coverage
+
+:::::::::::::: {.columns align="center"}
+::: {.column width="0.4"}
+
+![](fig/coverage.eps){width=0.4\textwidth}
+
+
+:::
+::: {.column width="0.6"}
+
+- aim to cover each base > 30 times
+- final sequence is the ***consensus*** of all the reads covering that base
+- $\text{1 Gb} \times \text{30× coverage} = \text{30 Gb}$
+- $\frac{\text{30 Gb}}{\text{150 b}} = \text{200 million reads}$
+- using PacBio reads, with an average length of 20 kb?
+
+:::
+::::::::::::::
+
+\sourceleft{
+\href{https://dx.doi.org/10.1007/s12575-009-9004-1}{Commins \emph{et al}., 2009}
+}
+
+::: notes
+\tiny
+- during the sequencing process we've broken the starting material up into smaller fragments, and we need to make sure we sequence enough fragments to cover each base in the genome multiple times
+- there two main reasons for this
+- the first is to make sure we have enough data to join different sequences together
+- in this location we have a base that is only covered by one read, and one read would not be considered enough evidence that the sequence on the right is joined to the sequence on the left
+- the second is to help deal with sequencing errors
+- all sequencing technologies can produce errors, where a read has an incorrect base in it
+- if we have multiple reads covering a single genomic location, the reads can effectively "vote" for what the correct sequence should be
+- that's called the consensus sequence
+- as it happens most algorithms are happy enough with sequencing coverage around 30x\
+- so if our example genome here is 1 gigabase, or one billion bases long
+- and we want to sequence it to thirty fold coverage
+- we need to produce 30 gigabases of sequence data
+- if our read length is 150 b, like in illumina sequencing, that means we would want 200 million reads to get that level of coverage
+- and i'll leave it for you to calculate how much PacBio data we'd need at an average read length of 20 thousand bases to get the same coverage
+- 
+:::
+
+
 # Sequencing strategies for genome assembly
 
 :::::::::::::: {.columns align="center"}
@@ -334,54 +384,6 @@
 - the main drawback for these approaches is that the accuracy is lower, particularly for oxford nanopore sequencing. it is getting better all the time, but it's still quite a way behind the accuracy of illumina sequencing.
 - however if you are assembling a genome with long reads, you can expect much higher contiguity (meaning the genome is represented in fewer sequences) than a short-read only genome
 - and if you have gaps in your short-read assembly, long reads that span those gaps are the only way to fill in the missing sequence
-:::
-
-# Sequencing coverage
-
-- insert other figure here
-- or not? i don't really agree with it
-
-# Sequencing coverage
-
-:::::::::::::: {.columns align="center"}
-::: {.column width="0.4"}
-
-![](fig/coverage.eps){width=0.4\textwidth}
-
-
-:::
-::: {.column width="0.6"}
-
-- aim to cover each base > 30 times
-- final sequence is the ***consensus*** of all the reads covering that base
-- $\text{1 Gb} \times \text{30× coverage} = \text{30 Gb}$
-- $\frac{\text{30 Gb}}{\text{150 b}} = \text{200 million reads}$
-- using PacBio reads, with an average length of 20 kb?
-
-:::
-::::::::::::::
-
-\sourceleft{
-\href{https://dx.doi.org/10.1007/s12575-009-9004-1}{Commins \emph{et al}., 2009}
-}
-
-::: notes
-\tiny
-- during the sequencing process we've broken the starting material up into smaller fragments, and we need to make sure we sequence enough fragments to cover each base in the genome multiple times
-- there two main reasons for this
-- the first is to make sure we have enough data to join different sequences together
-- in this location we have a base that is only covered by one read, and one read would not be considered enough evidence that the sequence on the right is joined to the sequence on the left
-- the second is to help deal with sequencing errors
-- all sequencing technologies can produce errors, where a read has an incorrect base in it
-- if we have multiple reads covering a single genomic location, the reads can effectively "vote" for what the correct sequence should be
-- that's called the consensus sequence
-- as it happens most algorithms are happy enough with sequencing coverage around 30x\
-- so if our example genome here is 1 gigabase, or one billion bases long
-- and we want to sequence it to thirty fold coverage
-- we need to produce 30 gigabases of sequence data
-- if our read length is 150 b, like in illumina sequencing, that means we would want 200 million reads to get that level of coverage
-- and i'll leave it for you to calculate how much PacBio data we'd need at an average read length of 20 thousand bases to get the same coverage
-- 
 :::
 
 # Hybrid genome assembly

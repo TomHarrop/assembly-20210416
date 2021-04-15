@@ -10,17 +10,84 @@
 
 ::: notes
 \tiny
-- i said on the previous slide that there was a section of the genome that didn't have sufficient coverage to generate one long sequence
+- i said in the previous video that there was a section of the genome that didn't have sufficient coverage to generate one long sequence
 - the assembly algorithm will typically insert a gap at that location, which means that the genome will be broken into multiple fragments
 - so this genome assembly has been assembled into three fragments, which we call contigs, short for contiguous sequences
 - again, in a real assembly, the contigs won't be colour coded, so we won't necessarily be able to tell what the correct order of the contigs are
 - but we can use another approach called scaffolding to join the contigs together in the correct order, and sometimes fill in the gaps with sequence
 - depending on the scaffolding approach we use, we might not know the size of the gap or the sequence in the gap, so the contigs would just be separated in the assembly by an arbitrary number of Ns, representing unknown bases
-- in the next video i'll also talk about why we get gaps in the assembly in a bit more detail
+- in this video i'll also talk about why we get gaps in the assembly in a bit more detail
 - it's usually caused by features of the genome like repetitive elements or heterozygous regions, and it's not actually unexpected that assembly software can't resolve those regions
 :::
 
-# Word (sentence) example here
+# Imagine trying to reassemble a book from strings of letters...
+
+>>> It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity
+
+\vspace{2ex}
+
+\scriptsize
+
+:::::::::::::: {.columns align="center"}
+::: {.column width="0.6"}
+
+```{r, eval=FALSE,echo=TRUE}
+# "genome"
+itwasthebestoftimesitwastheworstoftimesitwastheageofw…
+
+# short "reads" (8 b)
+itwasthe                               
+ twastheb                      
+  wasthebe                      
+   asthebes                      
+     ...
+
+itwasthe           itwasthe            itwasthe
+
+# longer "reads" (19 b)
+         estoftimesitwasthew
+```
+
+:::
+::: {.column width="0.4"}
+
+```{r, eval=FALSE,echo=TRUE}
+itwasthebest
+itwasthewors
+itwastheageo
+itwastheepoc
+```
+
+
+:::
+::::::::::::::
+
+
+\source{
+Charles Dickens, \emph{A Tale of Two Cities}. Example: Jeremy Leipzig
+}
+
+::: notes
+\tiny
+- i'm going to try to give you a conceptual example based on reassembling a book that's been cut up into small words
+- this is a really popular example using a book by charles dickens called a tale of two cities
+- as far as i know this was first used by jeremy leipzig of drexel university
+- the first sentence goes like this
+- people use this sentence as an example because it's quite repetitive
+- what that says about charles dickens as an author is a matter of taste, but the fact is most eukaryotic genomes have repetitive regions so it's a useful example
+- let's imagine that was a genome and arrange it as a single string of letters
+- that's the genome assembly that we're trying to reconstruct
+- now let's imagine that we get short reads of 8 letters each, and we have adequate coverage to get a good assembly
+- i'm only showing you first handful here so that they fit on the screen, but these are all 8-letter substrings of the original string
+- if we take this first 8-letter string, "itwasthe", we can see that there are actually several places in the sentence that belongs
+- what that means is that we can't tell which non-repetitive bits connect to each other and in what order
+- we might end up assembling that as "it was the best of times, it was the epoch of belief", or "it was the epoch of belief, it was the age of wisdom"
+- we simply cannot reconstruct that with the information we have
+- now if we imagine we have slightly longer reads, in this case 19 letters, we might get some reads that connect the left part of the string to the right
+- so with this 19 letter reads we can assemble over that repeat
+- hopefully this illustrates why we sometimes get gaps between contigs if our read length is not long enough to span repeats, and how longer reads can help deal with that
+
+:::
 
 # ***Overlap-layout-consensus*** assembly (OLC)
 
@@ -83,7 +150,9 @@
 \tiny
 - the huge growth in the use of illumina sequencing meant that it was common to generate billions and billions of very short sequences as data for genome assembly, and OLC algorithms just couldn't cope with that amount of data
 - OLC algorithms become unusably slow with large numbers of small reads because of the all-vs-all comparison they use to find overlaps
+- what that means is that if you have millions of millions of short reads, you have to compare each read to all the other reads in the dataset to find overlaps
 - so if you have the 200 million reads i mentioned in the earlier video for 30x coverage of a 1 Gb genome, you have to calculate pairwise overlaps for four time ten to the power of 16 pairs of reads, so you can see how it becomes impractical to screen all the pairs
+- this means it's too expensive computationally to use OLC for short read assemblies
 - the key innovation that allowed genome assembly to work at all with short read sequencing is to split the reads into these shorter sub-sequences called k-mers
 - and this is the approach used by de bruijn assemblers
 - in this toy example we have 6-base reads, and we've split them into k-mers of length 4
@@ -98,11 +167,7 @@
 - back to the graph, once it's constructed the algorithm will clean it by removing paths that lead to dead ends
 - then the assembler will try to find a path through the graph where it visits each node at least once
 - if you sit and stare at this graph you can see that you can get back to this target sequence if you take this path through the graph shown by the red arrow
-- we can also use the k-mer profiles to spot reads that have errors in them, because erroneous k-mers will be rare in the whole dataset
-- so that allows us to spot kmers with errors, and just dump them from the kmer table
 :::
-
-# OLC *vs.* de Bruijn comparison
 
 
 # Challenges
@@ -125,7 +190,8 @@
 - another issue is long arrays of repetitive sequence, like you would see in telomeres or centromeres
 - so that's shown here by these reads piling up, indicating that we can't work out the true size of the repeat
 - and there are some genomic structures that can cause issues with the sequencing process itself like repeat structures that can't be amplified by pcr or can't be read accurately by nanopore sequencing
-- hopefully what you can see is that these two situations can be resolved by generating longer sequencing reads that span these structures, and that's why there's been a big push to increase the length, throughput and accuracy of long read sequencing
+- and these can be muted in the assembly, meaning that they only appear once or a few times
+- hopefully what you can see is that these situations can be resolved by generating longer sequencing reads that span these structures, and that's why there's been a big push to increase the length, throughput and accuracy of long read sequencing
 :::
 
 # Challenges - ploidy
@@ -154,8 +220,7 @@
 
 ::: notes
 \tiny
-- now that we've looked at what a genome sequence is and why we might want one, and got a handle on some of the concepts of genome assembly, it's time to take a brief look at how genome assembly software works
-- first we need to be a bit more precise about what we mean by a genome sequence
+- there's another challenge in assembling genomes that we need to be aware of
 - in the case of prokaryotes, assembling the chromosomal genome is relatively straightforward, because they only have one copy of the chromosome in every cell
 - eukaryotes, on the other hand, can have from one to several copies each chromosome in the nucleus of their cells
 - a diploid organism has two homologous copies of each chromosome in its cells, usually one copy from each of the male and female parents
@@ -193,7 +258,7 @@
 - an individual could be either homozygous at that locus, with two copies of the same allele (either big b or small b), or heterozygous, meaning that one of the individual's copies of the chromosome has a big B allele, and the other has a small b allele
 - when we generate our sequencing data for genome assembly, if we sequence a heterozygous individual, how are we going to represent this in the genome sequence?
 - actually, a standard genome sequence is meant to be haploid representation of the organism's genetic material
-- that's the slighly more precise definition of a genome that we need to keep in mind when we're looking at assembly algorithms
+- that's a slighly more precise definition of a genome that we should keep in mind when we're looking at assembly algorithms
 - what that means is that that only one of these alleles will be represented in the genome sequence
 - the assembly software needs to make a choice of which allele will be in the sequence, and it's usually fairly random and just based on which allele has a higher depth of coverage
 :::
@@ -217,7 +282,6 @@
 - meaning it has reads that go from this side of the bubble, via this sequence to this side of the bubble, and reads that go via this side of the bubble
 - a gap will be inserted
 - so if you are dealing with an organism that is particularly heterozygous this can be very painful for short read assemblies, but you can see how this is another reason why long reads have an advantage for heterozygous genomes, because they can span these regions of heterozygosity
-- another factor to consider here is ploidy
 - it's probably obvious how complicated this becomes once you start needing to consider variation at polymorphic sites in individuals that are tetraploid, hexaploid and so on
 - assembling polyploid genomes is one outstanding challenges in the field of genome assembly
 :::
@@ -271,6 +335,14 @@ OLC algorithm:
 - [`MaSuRCA`](https://github.com/alekseyzimin/masurca)
 - [`Unicycler`](https://github.com/rrwick/Unicycler)
 
+\vspace{2ex}
+
+**Special cases**
+
+\vspace{1ex}
+
+- metagenomes, transcriptomes ...
+
 :::
 ::::::::::::::
 
@@ -278,10 +350,10 @@ OLC algorithm:
 \tiny
 - at last we can talk about some of the software we can use to actually do assemblies
 - there is a lot of assembly software out there, and some works better that others
-- unfortunately it's not always possible to know in advance which assembler will work on your dataset, so it's pretty common practice just to throw a bunch of assemblers and your data and see which works, and i've talked about some of the metrics you can use to decide which assembly is your favourite in a previos video
+- unfortunately it's not always possible to know in advance which assembler will work on your dataset, so it's pretty common practice just to throw a bunch of assemblers and your data and see which works, and i'll talk about some of the metrics you can use to decide which assembly is your favourite in the next video
 - i've split these up into short and long read assemblers
 - almost all of the short read assemblers use the de bruijn approach
-- spades is a very popular assembler and it's one of the ones you'd probably try first if you were doing a short read assembly
+- spades is a very popular assembler and it's one of the ones you'd probably try first if you were doing a short read assembly. i think you're using that in the workshop this week.
 - velvet and abyss are a bit old now, but they worked for small assemblies like prokaryotic genomes
 - meraculous and discovar have both been abandoned but they rate a mention because they both explicitly handle heterozygous assemblies
 - SOAP is popular because it's easy to run but it has problems with mis-joins
@@ -296,7 +368,8 @@ OLC algorithm:
 - there are also a couple of hybrid assemblers that combine long reads and short reads in the assembly process
 - there are also a couple of hybrid assembler available
 - masurca uses OLC for the long reads and de bruijn for the short reads and combines the assemblies
-- unicycler is specifically for hybrid assembly of circular sequences like bacterial chromosomes
+- unicycler is specifically for hybrid assembly of circular sequences like bacterial chromosomes and you'll also be using that in the workshop
+- and there are also specialised assemblers for specific situations like metagenomes and transcriptomes, which you'll hear about later in this subject
 - the LR assemblers all use an all-v-all comparison for the raw reads (see https://doi.org/10.1038/s41587-020-00747-w)
 - hybrid spades uses the long reads for gap closing
 - also standalone programs for performing parts of the algorithm, e.g. minimap2 for detecting overlaps in long reads

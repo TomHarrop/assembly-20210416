@@ -3,7 +3,7 @@
 :::::::::::::: {.columns align="top"}
 ::: {.column width="0.5"}
 
-**Assembly qualities**:
+**Assembly qualities** (jargon!):
 
 - draft
 - reference
@@ -31,15 +31,17 @@
 
 ::: notes
 \tiny
-
-- this brings me to the various words that are used to describe the quality of assemblies
-- most of these descriptions are used pretty loosely so these aren't formal definitions at all
+- you've done an assembly using one of the approaches i talked about in the last video
+- ideally you've used a bunch of different approaches
+- how are you going to compare them to decide which one is the most useful?
+- there are a bunch of words that are used to describe genome assemblies
+- most of this jargon used pretty loosely so these aren't formal definitions at all
 - a draft genome probably means you've got a fragmented assembly in large number of contigs, and probably haven't done any scaffolding
 - you might not expect to have a very complete sequence in that situation
 - reference assembly  would imply that you have some larger scaffolds, probably corresponding to chromosomes, and you've got some evidence that the sequence is 90% complete or more
 - chromosome-level means that you've scaffolded most of your contigs into chromsomes, and you have a sequence for each chromosome
 - these assemblies almost always still have some unanchored contigs that couldn't be assigned to chromosomes
-- and then as i just said, a telomere to telomere or complete assembly contains the whole sequence of the chromosome, with the word closed meaning that the gaps have been filled in
+- a telomere to telomere or complete assembly contains the whole sequence of the chromosome, with the word closed meaning that the gaps have been filled in
 - there have been some attempts to standardise assembly quality metrics but the goalposts do shift every now and then as sequencing technology improves and gets cheaper
 - the vertebrate genome project (VGP) is aiming to assemble 70 thousand vertebrate genomes
 - they have set some quality targets for these assemblies
@@ -93,8 +95,7 @@ Or *L*~50~ (*L* \rightarrow \ length)?
 - i'm afraid there's no consistent usage and i've also seen these terms used the other way around with L50 referring to the number of contigs
 - I try to use the phrase N50 length so it's obvious that I'm talking about a contig length rather than a number of contigs
 - this might not be 100\% clear to you yet, and you have my commiseration. it's a tricky concept to grasp
-- don't worry about it too much, you will have plenty of chances to get used to N50 statistics
-- for now if it's not making sense, you can just remember that it's a statistic for describing the distribution of fragment sizes, just like the mean contig length is
+- remember that it's a statistic for describing the distribution of fragment sizes, just like the mean contig length is
 - a high N50 means that your genome is assembled into large chunks, and a low N50 means the assembly is quite scaffolded
 - it doesn't measure the underlying quality of the assembly
 - for example if you wanted a great N50, you could just paste all the chunks together. the sequences would be wrong, but the N50 would be high
@@ -139,14 +140,19 @@ sorted_lengths[i]
 ::::::::::::::
 
 ::: notes
-
 \tiny
-
-Sine bvlah
-
-- note
-- more note
-
+- this is exactly what i said on the previous slide except in python code rather than a cartoon
+- it's a naive implementation using numpy to calculate the n50 length from a bunch of contig lengths
+- these are the same as the values on the previous slide
+- all we have to do is sort them from largest to smallest (that's what reverse is for)
+- the genome size is the sum of the lengths
+- this is a one-liner to get the n50 contig (not the lengths)
+- we use numpy's cumulative sum function to add up the contig lengths
+- the first element will be 100, the second will be 100 + 70 and so on
+- and then for all the elements in that result, we just check if it's greater than or equal to half the genome
+- and then we use the index method to get the first item where this evaluates to True
+- that's at this location in the list
+- we look up the length of that contig is 60, just like on the previous slide
 :::
 
 
