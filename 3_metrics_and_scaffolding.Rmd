@@ -184,6 +184,7 @@ VPG assembly metrics, \href{https://doi.org/10.1101/2020.05.22.110833}{Rhie \emp
 - the number of gaps in the assembly
 - the completeness, based on the fraction of k-mers from high quality reads that are found in the finished genome
 - gene-based completeness, which is measured by searching for certain highly-conserved genes from related species
+- that's commonly done with software called BUSCO
 - and mappability of transcripts from related species
 - as you'd expect in a draft assembly the n50 stats are quite low and the genome is probably only 80\% complete or so, based on these other metrics
 - along with the target n50 stats i metioned, the VGP also aims for completeness over 90\%
@@ -195,8 +196,6 @@ VPG assembly metrics, \href{https://doi.org/10.1101/2020.05.22.110833}{Rhie \emp
 - a completed assembly would not have any gaps, and all of the kmers from the high quality reads would be found in the assembly
 - there is an upper limit on the gene completeness and transcript mappability, because of genuine differences between the organisms used for comparison
 :::
-
-# The ***genes*** metric: BUSCO
 
 # Scaffolding
 
@@ -223,7 +222,10 @@ VPG assembly metrics, \href{https://doi.org/10.1101/2020.05.22.110833}{Rhie \emp
 
 ::: notes
 \tiny
-
+- if you have an assembly that you're trying to improve, one way it so go back and get more, longer reads and repeat the assembly
+- that's not always feasible and it's not guaranteed to improve the assembly
+- another common approach is the use complementary data sources to join contigs together
+- these approaches are pretty effective at joining gaps so they're often done in parallel to the 
 - what are some methods of scaffolding these contigs?
 - one option is to simply align your contigs to a reference genome and use that to decide the order of contigs and the size of the gaps between them
 - this is probably the least satisfactory method because it ignores the potential for genuine differences from the references in the arrangement of the genome you are trying to assemble
@@ -355,3 +357,59 @@ VPG assembly metrics, \href{https://doi.org/10.1101/2020.05.22.110833}{Rhie \emp
 - and this approach is being used now to try to get a fully closed sequence of the human genome
 - this approach where even the repetitive elements of the genome are fully sequenced is being called telomere-to-telomere assmebly
 :::
+
+# Summary
+
+\centering
+
+**Two major approaches to *de novo* assembly**:
+
+\vspace{1ex}
+
+:::::::::::::: {.columns align="top"}
+::: {.column width="0.5"}
+
+**Short read**
+
+- prokaryotes, simple genomes
+- relatively cheap
+- high accuracy assemblies, but struggles with complex genomes
+- assembly algorithms are fast and efficient
+
+:::
+::: {.column width="0.5"}
+
+**Long read**
+
+- resolves complicated genomes
+- expensive, relatively tricky to generate data
+- accuracy a little lower
+- assembly is slow and memory-hungry
+
+:::
+::::::::::::::
+
+\vspace{2ex}
+
+Scaffolding improves the contiguity in many cases
+
+Hybrid approaches are currently popular
+
+::: notes
+\tiny
+- to summarise this lecture
+- after i introduced the concepts of genome assembly, i went through two major classes of genome assembly
+- short read genomes using second-generation illumina sequencing are good for prokaryotes or simple genomes without too much repeat content
+- the main benefit is that it is relatively cheap to produce a lot of high quality data, but the limitations of the short reads mean that assembly of complex repetitive regions isn't possible
+- the high quality and short sequences mean that software for these assemblies can use efficient de bruijn graph algorithms
+- in contrast long read assemblies are better for resolving complex genomes
+- but the data is a little harder to come by because sequencing is expensive and you have to be very careful with the sample
+- accuracy is a little lower but it's catching up
+- probably only a matter of time until these are as accurate as short read assemblies - there are alread ONT assemblies of bacterial genomes that are don't have any base errors
+- the software for assembling these datasets is much slower and uses much more memory than short read assembly
+- i also talked about a bunch of scaffolding techniques that can be combined with any assembly approach
+- recently hybrid assemblies have been popular for combining short read data with long read data
+- personally i wonder if the increasing accuracy of long reads means that this approach will become redundant
+- but i'll talk about an example of a hybrid assembly in the live session on thursday
+:::
+

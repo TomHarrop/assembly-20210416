@@ -1,9 +1,19 @@
 # *De novo* genome assembly
 
-- Introduction to genome assemblies
-- Assembly software and algorithms
-- 
+1. Introduction to genome assemblies
+2. Assembly software and algorithms
+3. Assembly metrics and scaffolding
+4. Live session: an example hybrid assembly
 
+::: notes
+\tiny
+- i've split this lecture into three videos
+- in this video i'll give you an introduction to the concepts of de novo genome assembly
+- in the second video i'll talk about the algorithms used for genome assembly and mention some of the software you can use for de novo assembly
+- and in the third part I'll show you some metrics that are used to assess assemblies and talk about how scaffolding can be used to improve de novo assemblies
+- then we've got a live session on thursday, where i'll go through an example of a recent hybrid genome assembly
+- there'll also be a q and a session so if anything's not clear in the videos make a note of it and i'll be happy to answer it on thursday
+:::
 
 # Why sequence genomes?
 
@@ -278,12 +288,6 @@
 - this problem is compounded for genomes that have more than one chromosome
 - and i'll talk about some of the other challenges in this process a bit later on
 :::
-
-
-# Sequencing coverage
-
-- insert other figure here
-- or not? i don't really agree with it
 
 # Sequencing coverage
 
