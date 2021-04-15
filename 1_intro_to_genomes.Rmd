@@ -1,3 +1,10 @@
+# *De novo* genome assembly
+
+- Introduction to genome assemblies
+- Assembly software and algorithms
+- 
+
+
 # Why sequence genomes?
 
 :::::::::::::: {.columns align="center"}
@@ -8,11 +15,14 @@
 :::
 ::: {.column width="0.4"}
 
+::: incremental
+
 - compare differences between species
 - compare variants of a species or population
 - research diseases
 - provide a reference for gene expression analysis
 
+:::
 :::
 ::::::::::::::
 
@@ -20,18 +30,12 @@
 \tiny
 
 - what does the sequence of an organism's genome tell us?
-- prokaryotes and eukaryotes have DNA genomes, made up of strings of bases represented by the letters A, T, G and C
 - the order of these bases is functional, in that it encodes information, such as the instructions to make proteins
-- in this examples I'm showing you a short coding sequence, which is part of gene that is read by cellular machinery to produce proteins
-- at this particular site, the sequence of bases is ATG, which instructs the cell to incorporate a tyrosine residue in the protein
-- the next site is CTT, which instructs it to incorporate a glutamate residue
-- so knowing this sequence of DNA bases allows us to look at the cell's set of instructions for producing proteins
-- the genome sequence is a bit like an architect's plan for building a house, if that analogy helps
+- in that example, knowing this sequence of DNA bases allows us to look at the cell's set of instructions for producing proteins
 - sequencing an organism's genome allows us to look at the instructions for an organism, but as researchers, what do we do with that information?
 - actually we use genomes for lots of different types of research, and these are just a few examples
-- this is an alignment between the nuclear genomes of homo sapiens and pan troglodytes, the chimpanzee
-- comparing these two genomes might help us work out what causes the differences between the organisms
-- it might also tell us something about the genomic changes that occurred as the two genomes evolved separately after they split from their last common ancestor
+- comparing genomes can help us work out what causes the differences between the organisms
+- or tell us something about the genomic changes that occurred as the two genomes evolved separately after they split from their last common ancestor
 - on a finer scale, we might want to look at genomic variants within species or populations, to compare individuals of that species
 - this is an example you might have seen before
 - it's the global SARS-Cov2 phylogeny deposited on nextstrain
@@ -39,23 +43,46 @@
 - and this sort of information allows us to track the origin of different variants, and monitor their spread
 - looking at the variation between the sequences of isolates also allows us to make predictions about the function of the different isolates
 - and we can also track the evolution of isolates and work out evolutionary relationships between isolates
-- on an even finer scale we also use genome sequencing for clinical genetics
+- we also use genome sequencing for clinical genetics
 - as i said earlier we can look at the instructions for producing proteins by looking at the sequence of genes in the nuclear genome
 - if we have an individual with a disease and see that they have a mutation in the coding sequence for a gene associated with that disease, and that mutation changes the protein sequence encoded by the gene, then we can determine what the underlying cause of the disease is in that individual
-- you've probably heard the term precision medicine, and sequencing genomes of individual patients is obviously part of that
-- this is something that is becoming prominent in healthcare and we expect the amount of sequencing of individual patients' genomes in clinical settings to keep increasing
 - we also sequence genomes in research settings as a reference for other types of analysis
-- the example I'm showing here is for analysis of gene expression
-- in these experiments we sequence mRNA molecules to compare the strength of expression of genes in different conditions
+- for example when we sequence mRNA molecules to compare the strength of expression of genes in different conditions
 - to do this, we need a reference genome so we can work out which gene each read came from
-- you'll be hearing more about that in elements of bioinformatics in the coming weeks
-
+- these are just some examples, but there are many other use cases
+- constructing a genome is really one of the basic steps if you're studying the biology a system that hasn't been extensively studied before
 :::
 
+# How is *de novo* assembly different to multiple sequence alignment?
 
-# Difference between assembly and alignment
+\centering
 
-- don't have ref
+- ***de novo***: from scratch, without a reference
+- literally: anew, over again from the beginning
+- $\text{sequencing reads} \pm \text{structural information} \rightarrow  \text{genome sequence}$
+
+\vspace{2ex}
+
+![](img/elu042f2p.jpeg){height=30mm}
+
+\source{
+   \href{https://doi.org/10.1093/bfgp/elu042}{Wajid \& Serpedin, 2016}
+}
+
+::: notes
+\tiny
+- what do we mean by de novo assembly?
+- de novo assembly refers specifically to the situation where you are trying to produce a new assembly without a reference
+- for example if you want to do any of the analyses from the previous slide on an organism that hasn't been studied before
+- or the reference genome is inadequate
+- for example you might be interested in structural variants that are not in the reference genome for your species of interest
+- you'll be familiar with multiple sequence alignments from previous lectures
+- this sequence alignment is actually a type of assembly: we take the reads, line them up against at reference, and use that to generate a consensus
+- in this example there are two differences in the consensus sequence compared to the reference.
+- in de novo assembly, we're specifically talking about the situation when this reference sequence isn't available or we choose not to use it
+- the goal is to create the consensus sequence from the sequencing reads, without aligning to a reference genome
+- sometimes we have some structural information about how the consensus sequences should be grouped together, and i'll cover that in a later video
+:::
 
 
 # Prokaryotic and eukaryotic genomes
@@ -67,9 +94,6 @@
 
 :::
 ::: {.column width="0.5"}
-
-
-
 
 \small
 
@@ -103,7 +127,7 @@
 
 ::: notes
 \tiny
-
+- let's just recap what's in the genome
 - in this diagram the cell on the right represents a prokaryotic bacterial cell
 - the dna is contained in the single, cicular, chromosome, which is folded in the centre of the cell
 - there is also dna in the smaller, independently-replicating plasmids shown as dots
@@ -111,10 +135,7 @@
 - its genetic material is organised into chromatin, which forms compact chromosomes inside the nucleus
 - eukaryotic cells also have mitochondria (kidney beans), which contain their own genetic material 
 - this is called the mitochondrial genome
-- in eukaryotes the mitochondrial genome is usually inherited maternally, because the mitochondria are in the cytoplasm of the egg when it is fertilised by the sperm, and the sperm cell's mitochondria don't replicate after fertilisation
 - plant cells also have chloroplasts for photosynthesis, and chloroplasts have their own genetic material
-- like the plasmids in bacterial cells, both mitochondria and chloroplasts replicate independently of the chromosomes in the nucleus, but they are still considered part of the cell's genome
-- this is a summary of the differences between prokaryotic and eukaryotic genomes
 - prokaryotes usually have smaller genomes, with one chromosome that is quite compact
 - they have some extrachromosomal genetic material in plasmids
 - prokaryotic cells also often contain virus-like particles called bacteriophage, that also contain a small amount of genetic material
@@ -190,14 +211,12 @@
 ::: notes
 \tiny
 
-- what are the other non-coding sequences in the nuclear genomes of eukaryotes?
 - eukaryotic genes often contain additional sequence apart from the regions that encode proteins
 - the protein coding-regions, or coding sequence, of this gene is shown in red
 - there are also parts of the gene between the exons, that are called introns, that are removed when the mRNA is processed
 - there are other parts of the mature RNA that are not translated into proteins
 - there are also regulatory sequences in the DNA surrounding the genes (not shown in this diagram), which control when and where the gene is transcribed into messenger RNA
 - pseudogenes are dna sequences that are related to sequences of known genes, but are not functional
-- so this might occur when a change in selective pressure means that a gene is no longer required, so it is free to accumulate mutations like stop codons, which mean that it can't produce protein any more
 - aside from genes, huge portions of eukaryotic genomes can be made up of repetitive sequences, including transposons and retrotransposons, which are mobile genetic elements
 - these elements move around the genome can carry functional sequences with them, which can cause mutations in genes or lead to changes in gene expression
 :::
@@ -282,7 +301,6 @@
     - PacBio: ~ 20 kb reads
     - Nanpore: up to 100s of kb, read *N*~50~ usually > 20 kb
     - expect much better contiguity, but can have accuracy issues
-- Scaffolding approaches work with any underlying assembly
 
 :::
 ::::::::::::::
@@ -293,7 +311,7 @@
 
 ::: notes
 \tiny
-- this is a summary of the different sequencing approaches used to generate the data for genome assembly
+- i'm just going to recap the different sequencing options for generating data for a de novo genome assembly
 - i've included sanger sequencing here, which is the first-generation sequencing technology
 - this approach used on the human genome project which was completed in 2001
 - in this process the starting material was into structures called bacterial artificial chromosomes
@@ -308,17 +326,20 @@
 - you can also call it second generation sequencing, but it's often just called illumina sequencing because that's the dominant platform
 - its main benefits are that it's cheap to produce lots and lots of data, and the read accuracy is generally very high
 - illumina sequencing alone might be good enough to generate a quality assembly for a compact bacterial genome without much repeat sequence
-- however for more complex eukaryote genomes i would expect an assembly based on illumina sequencing alone to generate something more in the range of a draft genome sequence in terms of contiguity, although the sequences that were assembled would be high-accuracy
+- however for more complex eukaryote genomes with lots of repetitive sequence, we would expect an assembly based on illumina sequencing alone to struggle to produce an assembly
+- if you're trying to assemble a human genome, you might be aiming to produce one sequence for each of the 22 autosomes plus one or two for the sex chromosomes and a few sequences for the extrachromosomal material in the cells
+- with illumina data you'd probably end up with maybe thousands of sequences, because the short reads don't allow the difficult regions to be assembled
+- although the sequences that were assembled would be high-accuracy
 - long read sequencing obviously generates longer reads, around 20 kb for PacBio or possibly longer for oxford nanopore
 - the main drawback for these approaches is that the accuracy is lower, particularly for oxford nanopore sequencing. it is getting better all the time, but it's still quite a way behind the accuracy of illumina sequencing.
-- however if you are assembling a genome with long reads, you can expect much higher contiguity than a short-read only genome
+- however if you are assembling a genome with long reads, you can expect much higher contiguity (meaning the genome is represented in fewer sequences) than a short-read only genome
 - and if you have gaps in your short-read assembly, long reads that span those gaps are the only way to fill in the missing sequence
-- any of the scaffolding approaches i described can be used with assemblies produced using any of these sequencing strategies, although more contiguous assemblies will be easier to assemble because they are in fewer fragments
 :::
 
 # Sequencing coverage
 
 - insert other figure here
+- or not? i don't really agree with it
 
 # Sequencing coverage
 
@@ -360,6 +381,7 @@
 - we need to produce 30 gigabases of sequence data
 - if our read length is 150 b, like in illumina sequencing, that means we would want 200 million reads to get that level of coverage
 - and i'll leave it for you to calculate how much PacBio data we'd need at an average read length of 20 thousand bases to get the same coverage
+- 
 :::
 
 # Hybrid genome assembly
