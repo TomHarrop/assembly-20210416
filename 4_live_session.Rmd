@@ -22,14 +22,13 @@
 \tiny
 - why the honeybee?
 - honeybees are agriculturally quite important
-- obviously they are used commercially to produce honey
-- they're also important in pollination services to other agricultural sectors
-- despite their commercial importance they haven't really been through an extensive selection process like other livestock such as sheep and cattle
-- there are now genetic improvement programs in place in australia and new zealand to address this
-- these programs combine genome-wide genotyping of honeybees with measurements of hive performance to find markers that could be associated with performance
-- this is livestock improvement process called genomic selection
-- plus, they are cute so why wouldn't you want to work on them
-- they are also pretty interesting from an evolutionary point of view because of their unusual social structure and sex determination system
+- used commercially to produce honey
+- important in pollination services to other agricultural sectors
+- despite their commercial importance haven't been through extensive selection process like other livestock (sheep and cattle)
+- genetic improvement programs in australia and new zealand
+- combine genome-wide genotyping + measurements of hive performance -> markers that could be associated with performance
+- modern livestock improvement process called genomic selection
+- also interesting from an evolutionary point of view because of their unusual social structure and interesting behaviours
 :::
 
 # First genome assembly: Amel_4.0
@@ -42,12 +41,14 @@
 
 ::: notes
 \tiny
-- the first honeybee genome was released in 2006
-- it's called the Amel\_4.0 assembly for apis mellifera
-- that's an internal name from the lab doing the assembly, it doesn't mean it was the fourth genome released
-- this was a shotgun plus sanger sequencing approach
-- like the one i described for the first human genome assembly in the lecture material
-- they managed to assemble scaffolds for all of the 16 honeybee chromosomes, but there were lots of gaps caused by issues with coverage of certain regions, and the number of genes was quite low
+- first honeybee genome released in 2006
+- called the Amel\_4.0 assembly for apis mellifera
+- 4.0 is an internal name from the lab doing the assembly (doesn't mean it was the fourth genome released)
+- shotgun plus sanger sequencing approach
+- like first human genome assembly in the lecture material
+- scaffolds for all of the 16 honeybee chromosomes, but
+    - lots of gaps caused by issues with coverage of certain regions
+    - number of genes was quite low
 :::
 
 # 
@@ -56,7 +57,7 @@
 
 ::: notes
 \tiny
-- it was quite a surprise to find such a low number of genes
+- surprise to find such a low number of genes
 - for a while we thought that this was actually what the honeybee genome looked like
 - the theory in this paper was that one of the reasons honeybee colonies were so sensitive and could collapse without warning was that they simply didn't have the reservoir of genes to detoxify pesticides that were being used on crops near their hives
 :::
@@ -70,7 +71,7 @@
 - the first major update to this genome came in 2016, using some short read DNA and RNA sequencing improved the number of genes and filled in some gaps
 - the assembly was still quite fragmented with gaps in repetitive regions
 - the point here is not that the people who did these first two assemblies did something wrong, or are bad scientists
-- far from it - the initial assemblies were a lot of work and very useful as reference genomes
+- actually the initial assemblies were a lot of work and very useful as reference genomes
 - the quality of the assemblies reflects the technology that was available at the time they were done
 - the point is to highlight how those technologies from even just a few years ago affected the quality of assemblies 
 - it's a pretty good time right now to be doing genome assembly because the technology has really come a long way in a short time
@@ -134,6 +135,7 @@
 
 ::: notes
 \tiny
+- SKIP: main addition was repetetive regions that hadn't been assembled properly in the short read genome
 - this graph just shows the sequence they added compared to the previous assembly
 - dark blue is what was in Amel\_4.5
 - dark grey plus green is the sum of the new material in the hybrid assembly
@@ -162,7 +164,7 @@ pander::pander(metrics,
 
 ::: notes
 \tiny
-- i've taken the three honeybee genomes and compared them with the metrics i talked about in video three
+- i've taken the three honeybee genomes and compared them with the metrics i talked about in the lecture
 - (scaffold n50) the big difference between the original assembly and the upgraded short-read assembly is the scaffolding
 - whereas the main advantage to the hybrid assembly is that the contigs are much better (higher contig N50)
 - that's because the contigs were assembled with pacbio long reads
@@ -185,11 +187,11 @@ pander::pander(metrics,
 ::: notes
 \tiny
 - so we have an improved reference, is that the end of the genome assembly story for honeybees?
-- as always, there's more to it than that
 - all three assemblies were done from honeybees from the US
 - we know honeybees were introduced to the east coast of the US from Europe in the late 1800s and early 1900s
 - they were introduced to Australia and NZ from Europe around the same time
 - so theoretically, they could have quite a different genetic history, and they've been isolated for maybe 100s of generations
+- not sure if local honeybees have the same genome
 :::
 
 # We can assemble local genomes to compare
@@ -199,11 +201,12 @@ pander::pander(metrics,
 ::: notes
 \tiny
 - as i said, now is the time to be doing genome assemblies, so we can easily assemble our own genomes to compare
-- these are the two individuals from the genomic improvement program i mentioned
-- these honeybees have personalised genomes and they didn't even have to pay a biotech company for it
+- these are the two individuals from the genomic improvement program i mentioned in nz
 - this is oxford nanopore long-read data
 - this probably cost around \$500 per genome, and it took half a day in the lab and half a day of bioinformatics
-- these are whole-genome alignments against the hybrid assembly to see if the local genome assemblies are ok, and they're reasonable - scaffold N50 around 8 Mb
+- these are whole-genome alignments against the hybrid assembly 
+- these alignemnt plots connect blocks of homologous sequence between the reference and the query by a line
+- these quick local genome assemblies are ok - scaffold N50 around 8 Mb
 - the difference in these two assemblies is just down to the difference in the quality of the input DNA
 - i mentioned that was important in one of the other videos
 :::
@@ -214,12 +217,11 @@ pander::pander(metrics,
 
 ::: notes
 \tiny
-- and this is a closer look at the alignment of these two genomes against one of the reference chromosomes
+- and this is a closer look zoomed in to one of the reference chromosomes
 - both of these individuals have a 2.5 Mb inversion on this chromosome
-- so these honeybees are the same species as US honeybees
-- is the genome the same?
-- no. ordinary reference genomes are just a snapshot of the genomes in the individuals that were sequenced
-- variants are out there and they need to be incorporated into the reference
+- so these honeybees are the same species as US honeybees but their genomes are different
+- ordinary reference genomes like the current honeybee reference genome are just a snapshot of the genomes in the individuals that were sequenced
+- genome variants are out there and they need to be incorporated into the reference
 :::
 
 # Graphs and pangenomes
@@ -233,4 +235,5 @@ pander::pander(metrics,
 ::: notes
 \tiny
 - the field is starting to move towards treating reference genomes as graphs that capture all sorts of variants, rather than a linear sequence representing the haploid genetic material of one individual
+- you'll learn about advanced assembly topics like this later in the subject
 :::
